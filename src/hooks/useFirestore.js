@@ -21,6 +21,8 @@ const firestoreReducer = (state, action) => {
     }
 }
 
+/* Custome hook adds and removes documents */
+
 export const useFirestore = (collection) => {
     const [response, dispatch] = useReducer(firestoreReducer, initialState)
     const [isCancelled, setIsCancelled] = useState(false)
