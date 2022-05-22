@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { projectAuth } from '../firebase/configs'
 import { useAuthContext } from './useAuthContext'
 
@@ -10,6 +10,7 @@ import { useAuthContext } from './useAuthContext'
  */
 
 export const useSignup = () => {
+    const [isCancelled, setIsCancelled] = useState(false)
     const [error, setError] = useState(null)
     const [isPending, setIsPending] = useState(false)
     const { dispatch } = useAuthContext()
@@ -28,15 +29,24 @@ export const useSignup = () => {
 
             /* Dispatch login action */
             dispatch({ type: 'LOGIN', payload: res.user })
-
-            setIsPending(false)
-            setError(null)
+            
+            if (!isCancelled) {
+                setIsPending(false)
+                setError(null)
+            }
         } catch(err) {
-            console.log(err.message)
-            setError(err.message)
-            setIsPending(false)
+            if (!isCancelled) {
+                console.log(err.message)
+                setError(err.message)
+                setIsPending(false)
+            }
         }
     }
+
+    /* This prevents state to be updated when user navigates to other page while awaiting for response to get back */
+    useEffect(() => {
+        return () => setIsCancelled(true)
+    }, [])
 
     return { error, isPending, signup }
 }

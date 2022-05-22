@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { projectAuth } from '../firebase/configs'
 import { useAuthContext } from './useAuthContext'
 
@@ -6,6 +6,7 @@ import { useAuthContext } from './useAuthContext'
  * It logs the user out of the app and clears the user's data from the context
  */
 export const useLogout = () => {
+    const [isCancelled, setIsCancelled] = useState(false)
     const [error, setError] = useState(null)
     const [isPending, setIsPending] = useState(false)
     const { dispatch } = useAuthContext()
@@ -17,13 +18,25 @@ export const useLogout = () => {
         try {
             await projectAuth.signOut()
             dispatch({ type: 'LOGOUT' })
-            setError(null)
-            setIsPending(false)
+            /* Update state */
+            if (!isCancelled) {
+                setError(null)
+                setIsPending(false)
+            }
+            
         } catch (err) {
-            console.log(err.message)
-            setError(err.message)
-            setIsPending(false)
+            if (!isCancelled) {
+                console.log(err.message)
+                setError(err.message)
+                setIsPending(false)
+            }
         }
     }
+
+    /* This prevents state to be updated when user navigates to other page while awaiting for response to get back */
+    useEffect(() => {
+      return () => setIsCancelled(true)
+    }, [])
+    
     return { error, isPending, logout }
 }
