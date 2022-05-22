@@ -21,7 +21,6 @@ export default function TransactionForm({ uid }) {
           setAmount('')
       }
     }, [response.success])
-    
 
     return (
     <>
