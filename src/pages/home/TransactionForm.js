@@ -13,14 +13,18 @@ export default function TransactionForm({ uid }) {
             amount, 
             uid
         })
+        setName('')
+        setAmount('')
     }
 
+    /*
     useEffect(() => {
       if (response.success) {
           setName('')
           setAmount('')
       }
     }, [response.success])
+    */
 
     return (
     <>
